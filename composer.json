@@ -1,0 +1,31 @@
+{
+    "name": "chh/kue",
+    "description": "A simple interface to multiple job queue implemenations",
+    "authors": [
+        {
+            "name": "Christoph Hochstrasser",
+            "email": "christoph.hochstrasser@gmail.com"
+        }
+    ],
+    "keywords": [
+        "queue", "jobs", "background processing"
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "evenement/evenement": "1.0.*@stable"
+    },
+    "require-dev": {
+        "symfony/console": "2.1.*@stable",
+        "monolog/monolog": "1.2.*@stable"
+    },
+    "suggest": {
+        "ext-redis": "Enable RedisQueue",
+        "symfony/console": "Used by the console command",
+        "monolog/monolog": "Used by the console command"
+    },
+    "autoload": {
+        "psr-0": {
+            "Kue": "lib\/"
+        }
+    }
+}
