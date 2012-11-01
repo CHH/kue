@@ -15,6 +15,7 @@ use Kue\Queue;
 use Kue\Job;
 use Kue\SequentialWorker;
 use Kue\PreforkingWorker;
+use Kue\Worker as WorkerInterface;
 
 class Worker extends Command
 {
@@ -39,23 +40,8 @@ class Worker extends Command
             ->addOption('require', 'r', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'File(s) to require before accepting jobs');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function setupWorker(WorkerInterface $worker)
     {
-        $require = $input->getOption('require');
-
-        foreach ($require as $file) {
-            require($file);
-        }
-
-        if ($input->getOption('workers') > 1) {
-            $worker = new PreforkingWorker($input->getOption('workers'));
-        } else {
-            $worker = new SequentialWorker;
-        }
-
-        $output->writeln(sprintf('Processing jobs using %s on queue %s', get_class($worker), get_class($this->queue)));
-        $output->writeln('Stop with [CTRL]+[c]');
-
         $log = $this->log;
 
         $worker->on('init', function(Job $job) use ($log) {
@@ -76,6 +62,26 @@ class Worker extends Command
         $worker->on('success', function(Job $job) use ($log) {
             $log->addInfo(sprintf('Job "%s" finished successfully', get_class($job)), array('job' => $job));
         });
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $require = $input->getOption('require');
+
+        foreach ($require as $file) {
+            require($file);
+        }
+
+        if ($input->getOption('workers') > 1) {
+            $worker = new PreforkingWorker($input->getOption('workers'));
+        } else {
+            $worker = new SequentialWorker;
+        }
+
+        $output->writeln(sprintf('Processing jobs using %s on queue %s', get_class($worker), get_class($this->queue)));
+        $output->writeln('Stop with [CTRL]+[c]');
+
+        $this->setupWorker($worker);
 
         $worker->process($this->queue);
     }
