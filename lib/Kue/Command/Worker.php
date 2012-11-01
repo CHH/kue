@@ -25,10 +25,6 @@ class Worker extends Command
     function __construct(Queue $queue)
     {
         $this->queue = $queue;
-
-        $this->log = new Logger('kue:worker');
-        $this->log->pushHandler(new StreamHandler(STDERR));
-
         parent::__construct();
     }
 
@@ -66,6 +62,9 @@ class Worker extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->log = new Logger($this->getName());
+        $this->log->pushHandler(new StreamHandler(STDERR));
+
         $require = $input->getOption('require');
 
         foreach ($require as $file) {
