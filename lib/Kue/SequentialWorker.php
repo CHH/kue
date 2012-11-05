@@ -17,10 +17,10 @@ class SequentialWorker extends EventEmitter implements Worker
                 $self = $this;
 
                 set_error_handler(function() use ($job, $self) {
-                    $event = func_get_args();
-                    array_unshift($job, $event);
+                    $arguments = func_get_args();
+                    array_unshift($job, $arguments);
 
-                    $self->emit('error', $event);
+                    $self->emit('error', $arguments);
                 });
 
                 try {
