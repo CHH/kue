@@ -11,13 +11,17 @@ namespace Kue;
  */
 class RedisQueue implements Queue
 {
-    const QUEUE_KEY = "spark:queue";
+    const DEFAULT_KEY = "spark:queue";
+
+    /** @var string */
+    protected $key;
 
     /** @var \Redis */
     protected $redis;
 
-    function __construct(\Redis $redis)
+    function __construct(\Redis $redis, $key = self::DEFAULT_KEY)
     {
+        $this->key = $key;
         $this->redis = $redis;
     }
 
@@ -28,7 +32,7 @@ class RedisQueue implements Queue
      */
     function pop()
     {
-        $response = $this->redis->blPop(self::QUEUE_KEY, 10);
+        $response = $this->redis->blPop($this->key, 10);
 
         if ($response) {
             list($list, $serializedJob) = $response;
@@ -40,7 +44,7 @@ class RedisQueue implements Queue
 
     function push(Job $job)
     {
-        $this->redis->rPush(self::QUEUE_KEY, serialize($job));
+        $this->redis->rPush($this->key, serialize($job));
     }
 
     function flush()
@@ -48,3 +52,4 @@ class RedisQueue implements Queue
         # We send jobs directly in `push`, so we don't need to flush
     }
 }
+
