@@ -19,7 +19,8 @@ use SplQueue;
  */
 class LocalQueue implements Queue
 {
-    private $socket = "tcp://127.0.0.1:33133";
+    private $serverSocket = "tcp://127.0.0.1:33133";
+    private $clientSocket;
 
     private $client;
     private $queue;
@@ -31,6 +32,13 @@ class LocalQueue implements Queue
 
     function __construct()
     {
+        # Attempt to use a more efficient Unix socket when supported.
+        if (in_array('unix', stream_get_transports())) {
+            $this->serverSocket = "unix:///tmp/spark_local_queue.sock";
+        }
+
+        $this->clientSocket = $this->serverSocket;
+
         $this->received = new SplQueue;
 
         $this->queue = new SplQueue;
@@ -38,14 +46,25 @@ class LocalQueue implements Queue
     }
 
     /**
-     * Override the default socket.
+     * Override the default server socket.
      *
      * @param string $socket
      * @return void
      */
-    function setSocket($socket)
+    function setServerSocket($socket)
     {
-        $this->socket = $socket;
+        $this->serverSocket = $socket;
+    }
+
+    /**
+     * Override the default client socket.
+     *
+     * @param string $socket
+     * @return void
+     */
+    function setClientSocket($socket)
+    {
+        $this->clientSocket = $socket;
     }
 
     function pop()
@@ -77,7 +96,8 @@ class LocalQueue implements Queue
             fwrite($client, "$data\r\n");
         }
 
-        fclose($client);
+        @fclose($client);
+        $this->client = null;
     }
 
     function process(Worker $worker)
@@ -108,7 +128,7 @@ class LocalQueue implements Queue
     private function server()
     {
         if (null === $this->server) {
-            $this->server = stream_socket_server($this->socket, $errno, $errstr);
+            $this->server = stream_socket_server($this->serverSocket, $errno, $errstr);
 
             if (false === $this->server) {
                 throw new \InvalidArgumentException(sprintf(
@@ -123,7 +143,7 @@ class LocalQueue implements Queue
     private function client()
     {
         if (null === $this->client) {
-            $this->client = stream_socket_client($this->socket, $errno, $errstr);
+            $this->client = stream_socket_client($this->clientSocket, $errno, $errstr);
 
             if ($this->client === false) {
                 throw new \InvalidArgumentException(sprintf(

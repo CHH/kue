@@ -10,3 +10,10 @@ class HelloJob implements \Kue\Job
     }
 }
 
+class FooJob implements \Kue\Job
+{
+    function run()
+    {
+        echo time(), " Foo\n";
+    }
+}
