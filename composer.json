@@ -17,12 +17,14 @@
     },
     "require-dev": {
         "symfony/console": "2.1.*@stable",
-        "monolog/monolog": "1.2.*@stable"
+        "monolog/monolog": "1.2.*@stable",
+        "mtdowling/cron-expression": "1.*"
     },
     "suggest": {
         "ext-redis": "Enable RedisQueue",
         "symfony/console": "Used by the console command",
-        "monolog/monolog": "Used by the console command"
+        "monolog/monolog": "Used by the console command",
+        "mtdowling/cron-expression": "Enable CRON expressions"
     },
     "autoload": {
         "psr-0": {

@@ -10,5 +10,6 @@ $scheduler->every('30 seconds', new FooJob);
 
 for (;;) {
     var_dump($scheduler->run());
+    sleep(1);
 }
 

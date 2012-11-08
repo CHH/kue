@@ -5,6 +5,10 @@ namespace Kue;
 use DateTime;
 use DateInterval;
 
+use Kue\Scheduler\Expression;
+use Kue\Scheduler\CronExpression;
+use Kue\Scheduler\SimpleDateStringExpression;
+
 /**
  * Simple, tickless scheduler which puts jobs into the queue.
  *
@@ -31,8 +35,23 @@ class Scheduler
      */
     function every($interval, Job $job)
     {
-        $this->jobs[] = array($interval, $job);
+        $expression = new SimpleDateStringExpression($interval);
+        $this->add($expression, $job);
 
+        return $this;
+    }
+
+    function cron($expression, Job $job)
+    {
+        $expression = new CronExpression($expression);
+        $this->add($expression, $job);
+
+        return $this;
+    }
+
+    function add(Expression $expression, Job $job)
+    {
+        $this->jobs[] = array($expression, $job);
         return $this;
     }
 
@@ -44,35 +63,14 @@ class Scheduler
      */
     function run()
     {
-        $now = new DateTime;
-
-        $sleep = min(array_map(
-            function($current) use ($now) {
-                list($interval, $job) = $current;
-
-                $then = clone $now;
-                $then->modify($interval);
-
-                $seconds = $then->getTimestamp() - $now->getTimestamp();
-
-                return $now->getTimestamp() + ($seconds - ($now->getTimestamp() % $seconds));
-            },
-            $this->jobs
-        ));
-
-        time_sleep_until($sleep);
+        $now = new DateTime('now');
 
         $scheduled = 0;
 
         foreach ($this->jobs as $entry) {
-            list($interval, $job) = $entry;
+            list($expression, $job) = $entry;
 
-            $then = clone $now;
-            $then->modify($interval);
-
-            $seconds = $then->getTimestamp() - $now->getTimestamp();
-
-            if ($now->getTimestamp() % $seconds === 0) {
+            if ($expression->isDue($now)) {
                 $this->queue->push($job);
                 $scheduled += 1;
             }
