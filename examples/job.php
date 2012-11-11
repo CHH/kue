@@ -17,3 +17,11 @@ class FooJob implements \Kue\Job
         echo time(), " Foo\n";
     }
 }
+
+class CronJob implements \Kue\Job
+{
+    function run()
+    {
+        echo time(), " CRON\n";
+    }
+}

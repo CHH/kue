@@ -2,41 +2,52 @@
 
 namespace Kue\Scheduler;
 
+use DateTime;
+use DateInterval;
+
 class SimpleDateStringExpression implements Expression
 {
     protected $expression;
-    protected $duration;
+    protected $interval;
 
     function __construct($expression)
     {
-        # Only for reference.
+        # Only for reference
         $this->expression = $expression;
-
-        $now = new \DateTime('now');
-        $then = clone $now;
-        $then->modify($expression);
-
-        $this->duration = $then->getTimestamp() - $now->getTimestamp();
+        $this->interval = DateInterval::createFromDateString($expression);
     }
 
     function getNextRunDate($currentTime = 'now')
     {
-        if ($currentTime instanceof \DateTime) {
+        if ($currentTime instanceof DateTime) {
             $now = $currentTime;
         } else {
-            $now = new \DateTime($currentTime);
+            $now = new DateTime($currentTime);
         }
 
-        return $now->getTimestamp() + ($this->duration - ($now->getTimestamp() % $this->duration));
+        $then = clone $now;
+        $then->add($this->interval);
+
+        $duration = $then->getTimestamp() - $now->getTimestamp();
+
+        $date = new DateTime;
+        $date->setTimestamp($now->getTimestamp() + ($duration - ($now->getTimestamp() % $duration)));
+
+        return $date;
     }
 
-    function isDue(\DateTime $currentTime = null)
+    function isDue(DateTime $currentTime = null)
     {
         if (null === $currentTime) {
             $currentTime = new \DateTime('now');
         }
 
-        return $currentTime->getTimestamp() % $this->duration === 0;
+        $then = clone $currentTime;
+        $then->add($this->interval);
+
+        $duration = $then->getTimestamp() - $currentTime->getTimestamp();
+
+        return $currentTime->getTimestamp() % $duration === 0;
     }
 }
 

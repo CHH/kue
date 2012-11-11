@@ -16,9 +16,8 @@ use Kue\Scheduler\SimpleDateStringExpression;
  */
 class Scheduler
 {
-    protected $jobs = array();
+    protected $entries = array();
     protected $queue;
-    protected $lastRun;
 
     function __construct(Queue $queue)
     {
@@ -28,7 +27,7 @@ class Scheduler
     /**
      * Adds the job to the scheduler.
      *
-     * @param string $interval Any string accepted by DateTime::modify()
+     * @param string $interval Any string accepted by DateInterval::createFromDateString()
      * @param Job $job
      *
      * @return Scheduler
@@ -41,6 +40,14 @@ class Scheduler
         return $this;
     }
 
+    /**
+     * Schedules a job with a CRON expression.
+     *
+     * @param string $expression CRON expression
+     * @param Job $job
+     *
+     * @return Scheduler
+     */
     function cron($expression, Job $job)
     {
         $expression = new CronExpression($expression);
@@ -51,7 +58,7 @@ class Scheduler
 
     function add(Expression $expression, Job $job)
     {
-        $this->jobs[] = array($expression, $job);
+        $this->entries[] = array($expression, $job);
         return $this;
     }
 
@@ -65,9 +72,20 @@ class Scheduler
     {
         $now = new DateTime('now');
 
+        $sleep = min(array_map(
+            function($entry) use ($now) {
+                list($expression, $job) = $entry;
+
+                return $expression->getNextRunDate($now)->getTimestamp();
+            },
+            $this->entries
+        ));
+
+        time_sleep_until($sleep);
+
         $scheduled = 0;
 
-        foreach ($this->jobs as $entry) {
+        foreach ($this->entries as $entry) {
             list($expression, $job) = $entry;
 
             if ($expression->isDue($now)) {

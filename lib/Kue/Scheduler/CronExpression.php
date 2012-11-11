@@ -2,7 +2,7 @@
 
 namespace Kue\Scheduler;
 
-use Cron\BaseCronExpression;
+use Cron\CronExpression as BaseCronExpression;
 
 class CronExpression implements Expression
 {

@@ -22,10 +22,7 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
         $scheduler = new Scheduler($queue);
         $scheduler->every('1 seconds', new TestJob);
 
-        $t1 = time();
         $this->assertEquals(1, $scheduler->run());
-
-        $this->assertEquals(1, time() - $t1);
     }
 }
 
