@@ -112,10 +112,10 @@ which ships with Kue:
 
 ```php
 use Symfony\Component\Console\Application;
-use Kue\Command\Worker;
+use Kue\Command\WorkerCommand;
 use Kue\LocalQueue;
 
-$worker = new Worker(new LocalQueue);
+$worker = new WorkerCommand(new LocalQueue);
 
 $app = new Application;
 $app->add($worker);
@@ -129,4 +129,18 @@ with the `-c` flag:
 
 * `1`: The `Kue\SequentialWorker` is used.
 * `>1`: The `Kue\PreforkingWorker` is used, with a pool of `c` workers.
+
+To attach your own event listeners to the automatically selected worker
+instance, you can pass an array of event names plus handlers as second
+argument to the command's constructor:
+
+```php
+$webApp = new MyApplication;
+
+$worker = new WorkerCommand(new LocalQueue, array(
+    'init' => function($job) use ($webApp) {
+        $job->application = $webApp;
+    }
+));
+```
 

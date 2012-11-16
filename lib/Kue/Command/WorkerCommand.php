@@ -15,16 +15,19 @@ use Kue\Queue;
 use Kue\Job;
 use Kue\SequentialWorker;
 use Kue\PreforkingWorker;
-use Kue\Worker as WorkerInterface;
+use Kue\Worker;
 
-class Worker extends Command
+class WorkerCommand extends Command
 {
     protected $log;
     protected $queue;
+    protected $events;
 
-    function __construct(Queue $queue)
+    function __construct(Queue $queue, $events = array())
     {
         $this->queue = $queue;
+        $this->events = $events;
+
         parent::__construct();
     }
 
@@ -36,7 +39,7 @@ class Worker extends Command
             ->addOption('require', 'r', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'File(s) to require before accepting jobs');
     }
 
-    protected function setupWorker(WorkerInterface $worker)
+    protected function setupWorker(Worker $worker)
     {
         $log = $this->log;
 
@@ -58,6 +61,18 @@ class Worker extends Command
         $worker->on('success', function(Job $job) use ($log) {
             $log->addInfo(sprintf('Job "%s" finished successfully', get_class($job)), array('job' => $job));
         });
+
+        foreach ($this->events as $event => $handler) {
+            # A single event handler
+            if (is_callable($handler)) {
+                $worker->on($event, $handler);
+            # Multiple handlers for the event
+            } elseif (is_array($handler)) {
+                foreach ($handler as $h) {
+                    $worker->on($event, $h);
+                }
+            }
+        }
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -68,7 +83,7 @@ class Worker extends Command
         $require = $input->getOption('require');
 
         foreach ($require as $file) {
-            require($file);
+            require_once($file);
         }
 
         if ($input->getOption('workers') > 1) {

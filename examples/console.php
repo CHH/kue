@@ -7,8 +7,10 @@ use Symfony\Component\Console\Application;
 
 $queue = new Kue\LocalQueue;
 
+$worker = new Kue\Command\WorkerCommand($queue);
+
 $app = new Application;
-$app->add(new Kue\Command\Worker($queue));
+$app->add($worker);
 
 $app->run();
 

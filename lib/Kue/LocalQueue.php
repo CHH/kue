@@ -32,11 +32,6 @@ class LocalQueue implements Queue
 
     function __construct()
     {
-        # Attempt to use a more efficient Unix socket when supported.
-        if (in_array('unix', stream_get_transports())) {
-            $this->serverSocket = "unix:///tmp/spark_local_queue.sock";
-        }
-
         $this->clientSocket = $this->serverSocket;
 
         $this->received = new SplQueue;
