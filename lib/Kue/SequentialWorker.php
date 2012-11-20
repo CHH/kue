@@ -16,11 +16,10 @@ class SequentialWorker extends EventEmitter implements Worker
 
                 $self = $this;
 
-                set_error_handler(function() use ($job, $self) {
-                    $arguments = func_get_args();
-                    array_unshift($job, $arguments);
+                set_error_handler(function($code, $message, $file, $line) use ($job, $self) {
+                    $e = new \ErrorException($message, $code, 0, $file, $line);
 
-                    $self->emit('error', $arguments);
+                    $self->emit('exception', array($job, $e));
                 });
 
                 try {

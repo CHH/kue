@@ -112,10 +112,10 @@ which ships with Kue:
 
 ```php
 use Symfony\Component\Console\Application;
-use Kue\Command\WorkerCommand;
+use Kue\Command\WorkCommand;
 use Kue\LocalQueue;
 
-$worker = new WorkerCommand(new LocalQueue);
+$worker = new WorkCommand(new LocalQueue);
 
 $app = new Application;
 $app->add($worker);
@@ -123,7 +123,7 @@ $app->add($worker);
 $app->run();
 ```
 
-The queue worker can the be run with the `kue:worker` command inside the
+The queue worker can the be run with the `kue:work` command inside the
 Symfony Console Application. The worker implementations can be switched
 with the `-c` flag:
 

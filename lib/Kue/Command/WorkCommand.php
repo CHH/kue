@@ -17,7 +17,7 @@ use Kue\SequentialWorker;
 use Kue\PreforkingWorker;
 use Kue\Worker;
 
-class WorkerCommand extends Command
+class WorkCommand extends Command
 {
     protected $log;
     protected $queue;
@@ -33,7 +33,7 @@ class WorkerCommand extends Command
 
     protected function configure()
     {
-        $this->setName('kue:worker')
+        $this->setName('kue:work')
             ->setDescription('Processes jobs put into the queue')
             ->addOption('workers', 'c', InputOption::VALUE_REQUIRED, 'Number of workers', 1)
             ->addOption('require', 'r', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'File(s) to require before accepting jobs');
