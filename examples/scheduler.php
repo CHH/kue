@@ -8,7 +8,7 @@ $scheduler = new Kue\Scheduler(new Kue\LocalQueue);
 $scheduler->every('20 seconds', new HelloJob);
 $scheduler->every('30 seconds', new FooJob);
 
-# $scheduler->cron('* * * * *', new CronJob);
+$scheduler->cron('*/5 * * * *', new CronJob);
 
 for (;;) {
     var_dump($scheduler->run());

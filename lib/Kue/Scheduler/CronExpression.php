@@ -15,7 +15,7 @@ class CronExpression implements Expression
 
     function getNextRunDate($currentTime = 'now')
     {
-        return $this->expression->getNextRunDate($currentTime, 0, false);
+        return $this->expression->getNextRunDate($currentTime, 1, false);
     }
 
     function isDue(\DateTime $currentTime = null)
