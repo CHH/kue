@@ -3,6 +3,7 @@
 namespace Kue\Test;
 
 use Kue\Scheduler;
+use Kue\Scheduler\Time as t;
 use Kue\ArrayQueue;
 
 class TestJob implements \Kue\Job
@@ -20,7 +21,7 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
         $queue->expects($this->once())->method('push');
 
         $scheduler = new Scheduler($queue);
-        $scheduler->every('1 seconds', new TestJob);
+        $scheduler->every(1*t::SECOND, new TestJob);
 
         $this->assertEquals(1, $scheduler->run());
     }

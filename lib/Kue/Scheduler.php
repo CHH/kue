@@ -7,10 +7,11 @@ use DateInterval;
 
 use Kue\Scheduler\Expression;
 use Kue\Scheduler\CronExpression;
-use Kue\Scheduler\SimpleDateStringExpression;
+use Kue\Scheduler\SimpleExpression;
 
 /**
- * Simple, tickless scheduler which puts jobs into the queue.
+ * Simple, tickless scheduler which puts jobs into the queue when
+ * expressions are due.
  *
  * @author Christoph Hochstrasser <christoph.hochstrasser@gmail.com>
  */
@@ -27,14 +28,14 @@ class Scheduler
     /**
      * Adds the job to the scheduler.
      *
-     * @param string $interval Any string accepted by DateInterval::createFromDateString()
+     * @param int $interval Interval in seconds
      * @param Job $job
      *
      * @return Scheduler
      */
     function every($interval, Job $job)
     {
-        $expression = new SimpleDateStringExpression($interval);
+        $expression = new SimpleExpression($interval);
         $this->add($expression, $job);
 
         return $this;
