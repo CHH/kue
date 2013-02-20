@@ -1,28 +1,33 @@
 <?php
 
-namespace Ext\Kue;
+namespace Kue\Sqs;
 
 use Kue\PreforkingWorker;
 
-class SqsPreforkingWorker extends PreforkingWorker {
+class SqsPreforkingWorker extends PreforkingWorker
+{
 
 	protected $delay;
 
-	public function __construct($worker_poolsize, $delay = 1) {
-		parent::__construct($worker_poolsize);
+	public function __construct($workerPoolsize, $delay = 1)
+	{
+		parent::__construct($workerPoolsize);
 		$this->delay = $delay;
 
 		$worker = $this;
-		$this->on('success', function($job) use($worker) {
+		$this->on('success', function($job) use($worker)
+		{
 			$worker->getQueue()->deleteJob($job);
 		});
 	}
 
-	public function getQueue() {
+	public function getQueue()
+	{
 		return $this->queue;
 	}
 
-	protected function processJobs() {
+	protected function processJobs()
+	{
 		parent::processJobs();
 		sleep($this->delay);
 	}

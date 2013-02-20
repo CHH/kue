@@ -1,28 +1,33 @@
 <?php
 
-namespace Ext\Kue;
+namespace Kue\Sqs;
 
 use Kue\Job;
 
-abstract class SqsJob implements Job {
+abstract class SqsJob implements Job
+{
 
 	protected $data = array();
-	protected $receipt_handle;
+	protected $receiptHandle;
 
-	public function __construct($data) {
+	public function __construct($data)
+	{
 		$this->data = $data;
 	}
 
-	public function getData() {
+	public function getData()
+	{
 		return $this->data;
 	}
 
-	public function getReceiptHandle() {
-		return $this->receipt_handle;
+	public function getReceiptHandle()
+	{
+		return $this->receiptHandle;
 	}
 
-	public function setReceiptHandle($receipt) {
-		$this->receipt_handle = $receipt;
+	public function setReceiptHandle($receipt)
+	{
+		$this->receiptHandle = $receipt;
 	}
 
 	public abstract function run();

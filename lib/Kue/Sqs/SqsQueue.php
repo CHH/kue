@@ -1,40 +1,45 @@
 <?php
 
-namespace Ext\Kue;
+namespace Kue\Sqs;
 
 use Kue\Queue;
 use Kue\Job;
+use Kue\Sqs\SqsJob;
 
 use Aws\Common\Enum\ClientOptions;
 use Aws\Common\Enum\Region;
 use Aws\Sqs\SqsClient;
 
-class SqsQueue implements Queue {
+class SqsQueue implements Queue
+{
 
 	const REGION_EU_WEST_1 = Region::EU_WEST_1;
 	const REGION_US_EAST_1 = Region::US_EAST_1;
 
 	protected $client;
-	protected $queue_url;
+	protected $queueUrl;
 
-	public function __construct($access_key, $secret_key, $region, $queue) {
+	public function __construct($access_key, $secret_key, $region, $queue)
+	{
 		$this->client = SqsClient::factory(array(
 			ClientOptions::KEY		=> $access_key,
 			ClientOptions::SECRET	=> $secret_key,
 			ClientOptions::REGION	=> $region
 		));
 
-		$this->queue_url = $this->client->getQueueUrl(array('QueueName' => $queue))->get('QueueUrl');
+		$this->queueUrl = $this->client->getQueueUrl(array('QueueName' => $queue))->get('QueueUrl');
 	}
 
-	protected function serializeJob($job) {
+	protected function serializeJob($job)
+	{
 		return json_encode(array(
 			'class'		=> get_class($job),
 			'data'		=> json_encode($job->getData())
 		));
 	}
 
-	protected function unserializeJob($message, $receipt) {
+	protected function unserializeJob($message, $receipt)
+	{
 		$job = json_decode($message, true);
 		$class = $job['class'];
 		$job =  new $class(json_decode($job['data'], true));
@@ -43,9 +48,10 @@ class SqsQueue implements Queue {
 		return $job;
 	}
 
-	public function deleteJob($job) {
+	public function deleteJob($job)
+	{
 		$this->client->deleteMessage(array(
-			'QueueUrl'		=> $this->queue_url,
+			'QueueUrl'		=> $this->queueUrl,
 			'ReceiptHandle'	=> $job->getReceiptHandle()
 		));
 
@@ -59,9 +65,11 @@ class SqsQueue implements Queue {
 	 * @return Job|null Returns either a Job, or Null when the operation
 	 * timed out.
 	 */
-	public function pop() {
-		$messages = $this->client->receiveMessage(array('QueueUrl' => $this->queue_url))->get('Messages');
-		if(!empty($messages)) {
+	public function pop()
+	{
+		$messages = $this->client->receiveMessage(array('QueueUrl' => $this->queueUrl))->get('Messages');
+		if(!empty($messages))
+		{
 			return $this->unserializeJob($messages[0]['Body'], $messages[0]['ReceiptHandle']);
 		}
 	}
@@ -69,12 +77,13 @@ class SqsQueue implements Queue {
 	/**
 	 * Pushes the job onto the queue.
 	 *
-	 * @param Job $job
+	 * @param SqsJob $job
 	 * @return void
 	 */
-	public function push(Job $job) {
+	public function push(SqsJob $job)
+	{
 		$this->client->sendMessage(array(
-			'QueueUrl'		=> $this->queue_url,
+			'QueueUrl'		=> $this->queueUrl,
 			'MessageBody'	=> $this->serializeJob($job),
 		));
 	}
@@ -89,7 +98,8 @@ class SqsQueue implements Queue {
 	 *
 	 * @return void
 	 */
-	public function flush() {
+	public function flush()
+	{
 		// Messages are directly pushed, so no need to flush
 	}
 }
