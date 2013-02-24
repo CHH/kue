@@ -16,19 +16,24 @@
         "evenement/evenement": "1.0.*@stable"
     },
     "require-dev": {
+        "chh/bob": "1.0.*@dev",
+        "phpunit/phpunit": "~3.7",
         "symfony/console": "2.1.*@stable",
         "monolog/monolog": "1.2.*@stable",
-        "mtdowling/cron-expression": "1.*"
+        "mtdowling/cron-expression": "1.*",
+        "aws/aws-sdk-php": "~2.1.1"
     },
     "suggest": {
         "ext-redis": "Enable RedisQueue",
         "symfony/console": "Used by the console command",
         "monolog/monolog": "Used by the console command",
-        "mtdowling/cron-expression": "Enable CRON expressions"
+        "mtdowling/cron-expression": "Enable CRON expressions",
+        "aws/aws-sdk-php": "AmazonSqsQueue"
     },
     "autoload": {
         "psr-0": {
-            "Kue": "lib\/"
+            "Kue\\": "lib/",
+            "Kue\\Test\\": "tests/"
         }
     }
 }
