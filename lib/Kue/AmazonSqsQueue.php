@@ -9,8 +9,8 @@ class AmazonSqsQueue implements Queue
     protected $client;
     protected $queueUrl;
     protected $queueName;
-
-    protected $jobs = array();
+    protected $pending = array();
+    protected $waitTimeSeconds = 10;
 
     function __construct($queueName, array $config)
     {
@@ -18,16 +18,22 @@ class AmazonSqsQueue implements Queue
         $this->client = SqsClient::factory($config);
     }
 
+    function setWaitTimeSeconds($time)
+    {
+        $this->waitTimeSeconds = $time;
+    }
+
     function push(Job $job)
     {
-        $this->jobs[] = $job;
+        $this->pending[] = $job;
     }
 
     function pop()
     {
         $response = $this->client->receiveMessage(array(
             'QueueUrl' => $this->queueUrl(),
-            'MaxNumberOfMessages' => 1
+            'MaxNumberOfMessages' => 1,
+            'WaitTimeSeconds' => $this->waitTimeSeconds,
         ));
 
         $messages = $response->get('Messages');
@@ -64,7 +70,7 @@ class AmazonSqsQueue implements Queue
                 'Id' => $id,
                 'MessageBody' => rawurlencode($body)
             );
-        }, $this->jobs);
+        }, $this->pending);
 
         $response = $this->client->sendMessageBatch(array(
             'QueueUrl' => $this->queueUrl(),

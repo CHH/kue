@@ -13,14 +13,14 @@
     ],
     "require": {
         "php": ">=5.3.3",
-        "evenement/evenement": "1.0.*@stable"
+        "evenement/evenement": "~1.0"
     },
     "require-dev": {
-        "chh/bob": "1.0.*@dev",
+        "chh/bob": "~1.0@dev",
         "phpunit/phpunit": "~3.7",
-        "symfony/console": "2.1.*@stable",
-        "monolog/monolog": "1.2.*@stable",
-        "mtdowling/cron-expression": "1.*",
+        "symfony/console": "~2.1",
+        "monolog/monolog": "~1.2",
+        "mtdowling/cron-expression": "~1.0",
         "aws/aws-sdk-php": "~2.1.1"
     },
     "suggest": {
