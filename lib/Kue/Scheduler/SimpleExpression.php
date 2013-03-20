@@ -5,16 +5,13 @@ namespace Kue\Scheduler;
 use DateTime;
 use DateInterval;
 
-class SimpleDateStringExpression implements Expression
+class SimpleExpression implements Expression
 {
     protected $expression;
-    protected $interval;
 
     function __construct($expression)
     {
-        # Only for reference
         $this->expression = $expression;
-        $this->interval = DateInterval::createFromDateString($expression);
     }
 
     function getNextRunDate($currentTime = 'now')
@@ -25,10 +22,7 @@ class SimpleDateStringExpression implements Expression
             $now = new DateTime($currentTime);
         }
 
-        $then = clone $now;
-        $then->add($this->interval);
-
-        $duration = $then->getTimestamp() - $now->getTimestamp();
+        $duration = $this->expression;
 
         $date = new DateTime;
         $date->setTimestamp($now->getTimestamp() + ($duration - ($now->getTimestamp() % $duration)));
@@ -42,10 +36,7 @@ class SimpleDateStringExpression implements Expression
             $currentTime = new \DateTime('now');
         }
 
-        $then = clone $currentTime;
-        $then->add($this->interval);
-
-        $duration = $then->getTimestamp() - $currentTime->getTimestamp();
+        $duration = $this->expression;
 
         return $currentTime->getTimestamp() % $duration === 0;
     }

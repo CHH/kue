@@ -1,5 +1,11 @@
 <phpunit bootstrap="./tests/bootstrap.php">
     <php>
+        <!--
+        <env name="AWS_ACCESS_KEY" value="" />
+        <env name="AWS_SECRET_KEY" value="" />
+        <env name="AWS_REGION" value="" />
+        <env name="SQS_QUEUE_NAME" value="kue_test" />
+        -->
     </php>
     <testsuites>
         <testsuite name="kue Test Suite">

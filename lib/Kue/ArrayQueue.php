@@ -25,4 +25,7 @@ class ArrayQueue implements Queue
 
     function flush()
     {}
+
+    function process(Worker $worker)
+    {}
 }

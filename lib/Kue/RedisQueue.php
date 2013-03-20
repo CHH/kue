@@ -51,5 +51,8 @@ class RedisQueue implements Queue
     {
         # We send jobs directly in `push`, so we don't need to flush
     }
-}
 
+    function process(Worker $worker)
+    {
+    }
+}

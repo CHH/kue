@@ -105,7 +105,7 @@ class LocalQueue implements Queue
     {
         $server = $this->server();
 
-        $r = [$server];
+        $r = array($server);
         $w = null;
         $x = null;
 
