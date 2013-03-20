@@ -96,4 +96,8 @@ class AmazonSqsQueue implements Queue
 
         return $this->queueUrl;
     }
+
+    function process(Worker $worker)
+    {
+    }
 }
