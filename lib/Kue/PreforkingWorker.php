@@ -62,10 +62,7 @@ class PreforkingWorker extends EventEmitter implements Worker
         $this->selfPipe = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
 
         $this->queue = $queue;
-
-        if (is_callable(array($queue, 'process'))) {
-            $queue->process($this);
-        }
+        $queue->process($this);
 
         # Spawn up the initial worker pool.
         $this->spawnWorkers();

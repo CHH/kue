@@ -8,6 +8,8 @@ class SequentialWorker extends EventEmitter implements Worker
 {
     function process(Queue $queue)
     {
+        $queue->process($this);
+
         for (;;) {
             $job = $queue->pop();
 

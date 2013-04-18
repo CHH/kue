@@ -37,5 +37,12 @@ interface Queue
      * @return void
      */
     function flush();
-}
 
+    /**
+     * Gets called when the queue is registered with a Worker instance.
+     *
+     * Can be used by the queue to setup custom event handlers for worker events, to e.g. 
+     * handle failed jobs.
+     */
+    function process(Worker $worker);
+}
