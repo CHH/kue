@@ -18,7 +18,7 @@ class PreforkingWorker extends EventEmitter implements Worker
     protected $shutdown = false;
 
     protected $pidFile;
-    
+
     protected $queue;
 
     # 30 minutes
@@ -45,6 +45,8 @@ class PreforkingWorker extends EventEmitter implements Worker
         if (file_exists($this->pidFile)) {
             $serverPid = trim(file_get_contents($this->pidFile));
 
+            # When the process is not running anymore and a PID file exists
+            # than the PID file was not correctly unlinked on the last shutdown.
             if (!posix_kill($serverPid, 0)) {
                 unlink($this->pidFile);
             } else {
@@ -127,8 +129,8 @@ class PreforkingWorker extends EventEmitter implements Worker
         }
     }
 
-    # Does a save shutdown of the server process. Shuts
-    # down all worker processes and then exits.
+    # Does a save shutdown of the server process. Sets the shutdown flag,
+    # the main loop then exits when it sees that the flag is set.
     function shutdown()
     {
         $this->shutdown = true;
@@ -166,7 +168,7 @@ class PreforkingWorker extends EventEmitter implements Worker
 
     protected function spawnWorkers()
     {
-        $workersToSpawn = $this->workerPoolSize - count($this->workers);
+        $workersToSpawn = abs($this->workerPoolSize - count($this->workers));
 
         if ($workersToSpawn == 0) {
             return 0;
