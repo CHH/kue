@@ -8,4 +8,3 @@ interface Worker extends EventEmitterInterface
 {
     function process(Queue $queue);
 }
-

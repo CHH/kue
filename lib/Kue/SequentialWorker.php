@@ -19,9 +19,7 @@ class SequentialWorker extends EventEmitter implements Worker
                 $self = $this;
 
                 set_error_handler(function($code, $message, $file, $line) use ($job, $self) {
-                    $e = new \ErrorException($message, $code, 0, $file, $line);
-
-                    $self->emit('exception', array($job, $e));
+                    throw new \ErrorException($message, $code, 0, $file, $line);
                 });
 
                 try {
@@ -37,4 +35,3 @@ class SequentialWorker extends EventEmitter implements Worker
         }
     }
 }
-

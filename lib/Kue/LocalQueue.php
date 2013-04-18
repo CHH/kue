@@ -150,4 +150,3 @@ class LocalQueue implements Queue
         return $this->client;
     }
 }
-

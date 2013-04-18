@@ -180,9 +180,8 @@ class PreforkingWorker extends EventEmitter implements Worker
             $pid = pcntl_fork();
 
             if ($pid === -1) {
-                # Error while forking.
-                exit();
-
+                fwrite(STDERR, "Error while forking child process\n");
+                exit(1);
             } else if ($pid) {
                 # Parent, save the worker's process ID.
                 $this->workers[$pid] = array(
