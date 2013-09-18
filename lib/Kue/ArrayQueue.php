@@ -13,7 +13,7 @@ class ArrayQueue implements Queue
 
     function pop()
     {
-        if (count($queue) > 0) {
+        if (count($this->queue) > 0) {
             return array_pop($this->queue);
         }
     }
