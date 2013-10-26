@@ -24,6 +24,7 @@
         "aws/aws-sdk-php": "~2.1.1"
     },
     "suggest": {
+		"aws/aws-sdk-php": "Enable Amazon SQS Message Queues",
         "ext-redis": "Enable RedisQueue",
         "symfony/console": "Used by the console command",
         "monolog/monolog": "Used by the console command",
