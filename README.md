@@ -42,6 +42,7 @@ interface Kue\Queue
     function push(Kue\Job $job);
     function pop();
     function flush();
+    function process(Kue\Worker $worker);
 }
 ```
 
